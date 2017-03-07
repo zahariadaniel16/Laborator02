@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.PopupWindow;
 
 import ro.pub.systems.eim.lab02.activitylifecyclemonitor.R;
@@ -62,7 +63,12 @@ public class LifecycleMonitorActivity extends AppCompatActivity {
         Button cancelButton = (Button) findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(buttonClickListener);
 
-        Log.d(Constants.TAG, "onCreate() method was invoked without a previous state");
+        if (savedInstanceState != null) {
+            Log.d(Constants.TAG, "onCreate() method was invoked with prev instance");
+        } else {
+            Log.d(Constants.TAG, "onCreate() method was invoked");
+        }
+
     }
 
     @Override
@@ -108,17 +114,33 @@ public class LifecycleMonitorActivity extends AppCompatActivity {
         // apelarea metodei din activitatea parinte este recomandata, dar nu obligatorie
         super.onSaveInstanceState(savedInstanceState);
 
-        EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
-        savedInstanceState.putString(Constants.USERNAME_EDIT_TEXT, usernameEditText.getText());
-
-
         Log.d(Constants.TAG, "onSaveInstanceState method was invoked");
+
+        EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+        EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+        CheckBox check = (CheckBox)findViewById(R.id.remember_me_checkbox);
+
+        savedInstanceState.putString(Constants.PASSWORD_EDIT_TEXT, String.valueOf(passwordEditText.getText()));
+        savedInstanceState.putString(Constants.USERNAME_EDIT_TEXT, String.valueOf(usernameEditText.getText()));
+        savedInstanceState.putBoolean(Constants.REMEMBER_ME_CHECKBOX, check.isChecked());
+
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         // apelarea metodei din activitatea parinte este recomandata, dar nu obligatorie
         super.onRestoreInstanceState(savedInstanceState);
+        if (!savedInstanceState.getBoolean(Constants.REMEMBER_ME_CHECKBOX)) {
+            return;
+        }
         Log.d(Constants.TAG, "onRestoreInstanceState method was invoked");
+
+        EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+        EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+        CheckBox check = (CheckBox)findViewById(R.id.remember_me_checkbox);
+
+        usernameEditText.setText(savedInstanceState.getString(Constants.USERNAME_EDIT_TEXT));
+        passwordEditText.setText(savedInstanceState.getString(Constants.PASSWORD_EDIT_TEXT));
+        check.setChecked(savedInstanceState.getBoolean(Constants.REMEMBER_ME_CHECKBOX));
     }
 }
